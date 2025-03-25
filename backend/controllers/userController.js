@@ -49,8 +49,12 @@ const signupUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
+    if(!user){
+        return res.status(401).json({
+            message: 'User not found'
+        }); 
+    }
 
     if (user && await bcrypt.compare(password, user.password)) {
         const token = Jwt.sign(
@@ -58,14 +62,16 @@ const loginUser = asyncHandler(async (req, res) => {
             process.env.JWT_SECRET || "1921u0030",
             { expiresIn: "30m" }
         );
-
+        
         res.status(200).json({
-            message: "Login successful",
+            _id: user._id,
+            name: user.name,
+            email: user.email,
             token
         });
     } else {
         return res.status(401).json({
-            message: 'Invalid email or password'
+            message: 'Invalid password'
         });
     }
 });
