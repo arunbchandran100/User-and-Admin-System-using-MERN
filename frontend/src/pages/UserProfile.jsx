@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { updateProfile } from '../features/user/userSlice';
 
@@ -8,7 +7,6 @@ function UserProfile() {
     const { user } = useSelector((state) => state.auth);
     const { isLoading } = useSelector((state) => state.user);
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(user?.profileImage || null);

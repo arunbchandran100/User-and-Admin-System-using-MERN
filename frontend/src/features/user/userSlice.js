@@ -38,7 +38,7 @@ const userSlice = createSlice({
             .addCase(updateProfile.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(updateProfile.fulfilled, (state, action) => {
+            .addCase(updateProfile.fulfilled, (state) => {
                 state.isLoading = false;
                 state.isSuccess = true;
                 // We can't use thunkAPI here, so we'll handle this differently
