@@ -69,11 +69,60 @@ const deleteUser = async (userId, token) => {
     return await response.json();
 };
 
-const adminService = {
+// Add these new service functions to your adminService.js file
+
+// Create new user
+const createUser = async (userData) => {
+    const admin = JSON.parse(localStorage.getItem('admin'));
+    
+    const response = await fetch(`${API_URL}/users`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${admin.token}`
+        },
+        body: JSON.stringify(userData)
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+        throw new Error(data.message || 'Failed to create user');
+    }
+    
+    return data;
+};
+
+// Update user
+const updateUser = async (userId, userData) => {
+    const admin = JSON.parse(localStorage.getItem('admin'));
+    
+    const response = await fetch(`${API_URL}/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${admin.token}`
+        },
+        body: JSON.stringify(userData)
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+        throw new Error(data.message || 'Failed to update user');
+    }
+    
+    return data;
+};
+
+// Add these to your exports
+export const adminService = {
     login,
     logout,
     getUsers,
-    deleteUser
+    deleteUser,
+    createUser,
+    updateUser
 };
 
 export default adminService;

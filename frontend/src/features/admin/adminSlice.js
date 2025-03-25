@@ -47,6 +47,44 @@ export const deleteUser = createAsyncThunk('admin/deleteUser', async (userId, th
     }
 });
 
+// Create user
+export const createUser = createAsyncThunk(
+    'admin/createUser',
+    async (userData, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().admin.admin.token;
+            return await adminService.createUser(userData, token);
+        } catch (error) {
+            const message = 
+                (error.response && 
+                    error.response.data && 
+                    error.response.data.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
+// Update user
+export const updateUser = createAsyncThunk(
+    'admin/updateUser',
+    async ({ userId, userData }, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().admin.admin.token;
+            return await adminService.updateUser(userId, userData, token);
+        } catch (error) {
+            const message = 
+                (error.response && 
+                    error.response.data && 
+                    error.response.data.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -94,6 +132,35 @@ const adminSlice = createSlice({
                 state.isLoading = false;
                 state.isSuccess = true;
                 state.users = state.users.filter(user => user._id !== action.meta.arg);
+            })
+            // Add the new cases inside the builder function
+            .addCase(createUser.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(createUser.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.users.push(action.payload);
+            })
+            .addCase(createUser.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(updateUser.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.users = state.users.map(user => 
+                    user._id === action.payload._id ? action.payload : user
+                );
+            })
+            .addCase(updateUser.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
             });
     }
 });
