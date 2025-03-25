@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { updateProfile } from '../features/user/userSlice';
 
 function UserProfile() {
     const { user } = useSelector((state) => state.auth);
+    const { isLoading } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
@@ -12,6 +14,7 @@ function UserProfile() {
     const [imagePreview, setImagePreview] = useState(user?.profileImage || null);
     const [name, setName] = useState(user?.name || '');
     const [isEditing, setIsEditing] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -33,6 +36,7 @@ function UserProfile() {
     const uploadImageToCloudinary = async () => {
         if (!imageFile) return user?.profileImage || null;
 
+        setIsUploading(true);
         const formData = new FormData();
         formData.append("file", imageFile);
         formData.append("upload_preset", UPLOAD_PRESET);
@@ -57,6 +61,8 @@ function UserProfile() {
             console.error("Cloudinary upload error:", error);
             toast.error("Failed to upload image.");
             return user?.profileImage || null;
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -73,39 +79,30 @@ function UserProfile() {
                 profileImage: imageUrl
             };
             
-            // Send the updated data to your backend
-            const token = user.token;
-            const response = await fetch('http://localhost:5000/api/users/update-profile', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(updatedUserData)
-            });
+            // Dispatch the updateProfile action
+            const resultAction = await dispatch(updateProfile(updatedUserData));
             
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to update profile');
+            // Check if the action was fulfilled
+            if (updateProfile.fulfilled.match(resultAction)) {
+                toast.success('Profile updated successfully');
+                setIsEditing(false);
+                
+                // Directly update component state with the new values
+                setName(resultAction.payload.name);
+                setImagePreview(resultAction.payload.profileImage);
             }
-            
-            const data = await response.json();
-            
-            // Update local storage with new user data
-            const updatedUser = { ...user, name: name, profileImage: imageUrl };
-            localStorage.setItem('user', JSON.stringify(updatedUser));
-            
-            // TODO: Update Redux state with new user data
-            // dispatch(updateUserInState(updatedUser));
-            
-            toast.success('Profile updated successfully');
-            setIsEditing(false);
+            else {
+                // If the action was rejected, the error will be handled by the slice
+                // and displayed in the UI if needed
+                toast.error('Failed to update profile');
+            }
         } catch (error) {
             console.error('Error updating profile:', error);
             toast.error(error.message || 'Failed to update profile');
         }
     };
 
+    // Update the Save Changes button to show loading state
     return (
         <div className="min-h-screen bg-gray-50 py-12">
             <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
@@ -160,15 +157,27 @@ function UserProfile() {
                                     onChange={(e) => setName(e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     required
+                                    disabled={isLoading || isUploading}
                                 />
                             </div>
                             
                             <div className="flex space-x-3">
                                 <button
                                     type="submit"
-                                    className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
+                                    className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 flex items-center justify-center"
+                                    disabled={isLoading || isUploading}
                                 >
-                                    Save Changes
+                                    {(isLoading || isUploading) ? (
+                                        <>
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            {isUploading ? 'Uploading...' : 'Saving...'}
+                                        </>
+                                    ) : (
+                                        'Save Changes'
+                                    )}
                                 </button>
                                 <button
                                     type="button"
@@ -179,6 +188,7 @@ function UserProfile() {
                                         setImageFile(null);
                                     }}
                                     className="flex-1 bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 transition duration-200"
+                                    disabled={isLoading || isUploading}
                                 >
                                     Cancel
                                 </button>

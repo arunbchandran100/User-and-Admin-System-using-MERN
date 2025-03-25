@@ -67,6 +67,7 @@ const loginUser = asyncHandler(async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            profileImage: user.profileImage, // Add the profile image to the response
             token
         });
     } else {

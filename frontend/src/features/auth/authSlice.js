@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from './authService';
+import { updateProfile } from '../user/userSlice';
 
 // Initial state
 const initialState = {
@@ -59,6 +60,10 @@ const authSlice = createSlice({
             state.isSuccess = false;
             state.message = '';
         },
+        // Add this reducer to handle user updates
+        userUpdated: (state, action) => {
+            state.user = action.payload;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -90,9 +95,12 @@ const authSlice = createSlice({
             })
             .addCase(logout.fulfilled, (state) => {
                 state.user = null;
+            })
+            .addCase(updateProfile.fulfilled, (state, action) => {
+                state.user = action.payload;
             });
     },
 });
 
-export const { reset } = authSlice.actions;
+export const { reset, userUpdated } = authSlice.actions;
 export default authSlice.reducer;
