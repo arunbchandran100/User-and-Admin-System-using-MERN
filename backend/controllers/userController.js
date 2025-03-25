@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 const Jwt = require('jsonwebtoken'); // Add JWT
 
 const signupUser = asyncHandler(async (req, res) => {
-    const { name, email, password, confirmPassword, imageUrl } = req.body;
+    const { name, email, password, confirmPassword } = req.body;
+    console.log(name, email, password, confirmPassword)
 
     if (password !== confirmPassword) {
         res.status(400);
@@ -23,7 +24,6 @@ const signupUser = asyncHandler(async (req, res) => {
         name,
         email,
         password: hashedPassword,
-        image: imageUrl
     });
 
     if (user) {

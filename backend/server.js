@@ -1,20 +1,21 @@
 const express = require('express');
+const cors = require('cors');
+const userRoutes = require('./routes/userRoutes'); // Adjust the path as necessary
 const mongoose = require('mongoose');
-const userRoutes = require('./routes/userRoutes'); // Import user routes
-const app = express();
-const port = 3000;
 
+const app = express();
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/week-20-users')
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-// Middleware to parse JSON requests
+// Middleware
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-// Use user routes
+// Routes
 app.use('/api/users', userRoutes);
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
