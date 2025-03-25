@@ -21,11 +21,9 @@ function Home() {
                 <div className="bg-white rounded-lg shadow-lg p-8">
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                            Welcome, {user?.name}! 👋
+                            Welcome, {user?.name}
                         </h1>
-                        <p className="text-xl text-gray-600">
-                            We're glad to have you here
-                        </p>
+
                     </div>
                     
                     <div className="flex justify-center mt-8">

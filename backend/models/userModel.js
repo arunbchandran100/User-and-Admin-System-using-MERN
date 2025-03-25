@@ -14,13 +14,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    image:{
-        type:String
-    },
     createdAt: {
         type: Date,
         default: Date.now
     },
+    profileImage: {
+        type: String,
+        default: null
+    }
 });
 
 const User = mongoose.model('User', userSchema);

@@ -5,6 +5,9 @@ import Navbar from './components/Navbar';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import UserProfile from './pages/UserProfile';
+import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 
 function App() {
   const { user } = useSelector((state) => state.auth);
@@ -17,6 +20,13 @@ function App() {
             <>
               <Navbar />
               <Home />
+            </>
+          ) : <Navigate to="/login" />} />
+          
+          <Route path="/profile" element={user ? (
+            <>
+              <Navbar />
+              <UserProfile />
             </>
           ) : <Navigate to="/login" />} />
           

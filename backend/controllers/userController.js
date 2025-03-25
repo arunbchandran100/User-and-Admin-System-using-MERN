@@ -89,4 +89,37 @@ const logoutUser = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { signupUser, loginUser, logoutUser };
+const updateUserProfile = asyncHandler(async (req, res) => {
+    const { userId, name, profileImage } = req.body;
+    
+    // Verify that the user is updating their own profile
+    if (req.user.id !== userId) {
+        return res.status(403).json({
+            message: 'Not authorized to update this profile'
+        });
+    }
+    
+    const user = await User.findById(userId);
+    
+    if (!user) {
+        return res.status(404).json({
+            message: 'User not found'
+        });
+    }
+    
+    // Update user fields
+    if (name) user.name = name;
+    if (profileImage) user.profileImage = profileImage;
+    
+    const updatedUser = await user.save();
+    
+    res.status(200).json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        profileImage: updatedUser.profileImage,
+        message: 'Profile updated successfully'
+    });
+});
+
+module.exports = { signupUser, loginUser, logoutUser, updateUserProfile };
