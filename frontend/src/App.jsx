@@ -9,6 +9,10 @@ import UserProfile from './pages/UserProfile';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 
+// Add these imports at the top of your App.jsx file
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+
 function App() {
   const { user } = useSelector((state) => state.auth);
 
@@ -32,6 +36,9 @@ function App() {
           
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
           <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />
+          // Then in your Routes component, add these routes:
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </div>
     </Router>

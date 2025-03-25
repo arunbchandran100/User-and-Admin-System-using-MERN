@@ -1,17 +1,14 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
-import store from './app/store';
-import './index.css';  // Make sure this import is present
+import store from './app/store.js'; // This should match the default export
 import App from './App.jsx';
-import { ToastContainer } from 'react-toastify'; // Import ToastContainer
-import 'react-toastify/dist/ReactToastify.css';
+import './index.css';
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <ToastContainer />
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
     <Provider store={store}>
       <App />
     </Provider>
-  </StrictMode>,
+  </React.StrictMode>
 );
