@@ -76,4 +76,17 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { signupUser, loginUser };
+const logoutUser = asyncHandler(async (req, res) => {
+    try {
+        // You might want to handle token blacklisting here if implemented
+        res.status(200).json({
+            message: 'Logged out successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error during logout'
+        });
+    }
+});
+
+module.exports = { signupUser, loginUser, logoutUser };

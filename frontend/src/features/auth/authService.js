@@ -29,4 +29,13 @@ const login = async (userData) => {
     }
 };
 
-export default { signup, login };
+const logout = async (config) => {
+    try {
+        await axios.post(`${API_URL}/logout`, {}, config);
+        localStorage.removeItem('user');
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+};
+
+export default { signup, login, logout };

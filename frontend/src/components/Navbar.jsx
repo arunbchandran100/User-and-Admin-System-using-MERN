@@ -1,43 +1,33 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout, reset } from '../features/auth/authSlice';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
 
-    const onLogout = () => {
-        dispatch(logout());
-        dispatch(reset());
-        navigate('/');
+    const handleProfileClick = () => {
+        navigate('/profile');
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div className="container">
-                <Link className="navbar-brand" to="/">Week 20 Project</Link>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav ms-auto">
-                        {user ? (
-                            <li className="nav-item">
-                                <button className="nav-link btn btn-link" onClick={onLogout}>Logout</button>
-                            </li>
-                        ) : (
-                            <>
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/login">Login</Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/register">Register</Link>
-                                </li>
-                            </>
-                        )}
-                    </ul>
+        <nav className="bg-blue-800 text-white shadow-lg">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between h-16 items-center">
+                    <div className="flex-shrink-0">
+                        <h1 className="text-2xl font-bold">User Management</h1>
+                    </div>
+                    {user && (
+                        <div className="flex items-center space-x-4">
+                            <button
+                                onClick={handleProfileClick}
+                                className="flex items-center space-x-2 hover:bg-blue-700 px-3 py-2 rounded-md"
+                            >
+                                <span className="text-lg">👤</span>
+                                <span>{user.name}</span>
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </nav>

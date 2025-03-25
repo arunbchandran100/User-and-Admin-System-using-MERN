@@ -3,12 +3,12 @@ import authService from './authService';
 
 // Initial state
 const initialState = {
-    user: null,
-    isLoading: false,
+    user: JSON.parse(localStorage.getItem('user')) || null,
     isError: false,
     isSuccess: false,
-    message: '',
-};
+    isLoading: false,
+    message: ''
+}
 
 // Async thunks for user signup, login, and logout
 export const signup = createAsyncThunk('auth/signup', async (userData, thunkAPI) => {
@@ -33,9 +33,18 @@ export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) =
 
 export const logout = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
     try {
-        return await authService.logout();
+        const token = JSON.parse(localStorage.getItem('user'))?.token;
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        await authService.logout(config);
+        localStorage.removeItem('user');
+        return null;
     } catch (error) {
-        return thunkAPI.rejectWithValue(error.response.data);
+        const message = error.response?.data?.message || error.message;
+        return thunkAPI.rejectWithValue(message);
     }
 });
 
