@@ -31,15 +31,21 @@ const signupUser = asyncHandler(async (req, res) => {
 
     if (user) {
         const token = Jwt.sign(
-            { id: user._id, name, email },
+            { id: user._id, name: user.name, email: user.email },
             process.env.JWT_SECRET || "1921u0030",
-            { expiresIn: "1h" }
+            { expiresIn: "30m" }
         );
 
         res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            profileImage: user.profileImage, // Add the profile image to the response
             message: "User registered successfully",
             token
         });
+
+
     } else {
         return res.status(400).json({
             message: 'Invalid user data'
