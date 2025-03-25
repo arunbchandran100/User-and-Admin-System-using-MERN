@@ -15,7 +15,9 @@ export const signup = createAsyncThunk('auth/signup', async (userData, thunkAPI)
     try {
         return await authService.signup(userData);
     } catch (error) {
-        return thunkAPI.rejectWithValue(error.response.data);
+        const errorMsg = error.response?.data?.message || error.message; // Get detailed message
+        console.log(errorMsg); // Log it
+        return thunkAPI.rejectWithValue(errorMsg); // Send to Redux
     }
 });
 

@@ -8,14 +8,17 @@ const signupUser = asyncHandler(async (req, res) => {
     console.log(name, email, password, confirmPassword)
 
     if (password !== confirmPassword) {
-        res.status(400);
-        throw new Error('Passwords do not match');
+        return res.status(400).json({
+            message: 'Passwords do not match'
+        });
     }
 
     const userExists = await User.findOne({ email });
+    console.log(userExists) // Add this line to log the userExists value t
     if (userExists) {
-        res.status(400);
-        throw new Error('User already exists');
+        return res.status(400).json({
+            message: 'Email already exists'
+        });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -27,7 +30,6 @@ const signupUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
-        // Generate JWT token
         const token = Jwt.sign(
             { id: user._id, name, email },
             process.env.JWT_SECRET || "1921u0030",
@@ -39,23 +41,22 @@ const signupUser = asyncHandler(async (req, res) => {
             token
         });
     } else {
-        res.status(400);
-        throw new Error('Invalid user data');
+        return res.status(400).json({
+            message: 'Invalid user data'
+        });
     }
 });
 
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
-    // Find user by email
     const user = await User.findOne({ email });
 
     if (user && await bcrypt.compare(password, user.password)) {
-        // Generate JWT token
         const token = Jwt.sign(
             { id: user._id, name: user.name, email: user.email },
             process.env.JWT_SECRET || "1921u0030",
-            { expiresIn: "30m" } // Set expiration to 30 minutes
+            { expiresIn: "30m" }
         );
 
         res.status(200).json({
@@ -63,8 +64,9 @@ const loginUser = asyncHandler(async (req, res) => {
             token
         });
     } else {
-        res.status(401);
-        throw new Error('Invalid email or password');
+        return res.status(401).json({
+            message: 'Invalid email or password'
+        });
     }
 });
 
