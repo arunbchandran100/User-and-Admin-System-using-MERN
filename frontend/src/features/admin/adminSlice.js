@@ -128,18 +128,24 @@ const adminSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
-            .addCase(deleteUser.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
-                state.users = state.users.filter(user => user._id !== action.meta.arg);
-            })
+            // Remove this deleteUser.fulfilled case completely
+            // .addCase(deleteUser.fulfilled, (state, action) => {
+            //     state.isLoading = false;
+            //     state.isSuccess = true;
+            //     state.users = state.users.filter(user => user._id !== action.meta.arg);
+            // })
             // Add the new cases inside the builder function
             .addCase(createUser.pending, (state) => {
                 state.isLoading = true;
+                state.isSuccess = false;
+                state.isError = false;
+                state.message = '';
             })
             .addCase(createUser.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
+                // Use the message from the backend response if available
+                state.message = action.payload.message || 'User created successfully';
                 state.users.push(action.payload);
             })
             .addCase(createUser.rejected, (state, action) => {
@@ -149,15 +155,37 @@ const adminSlice = createSlice({
             })
             .addCase(updateUser.pending, (state) => {
                 state.isLoading = true;
+                state.isSuccess = false;
+                state.isError = false;
+                state.message = '';
             })
             .addCase(updateUser.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
+                // Use the message from the backend response if available
+                state.message = action.payload.message || 'User updated successfully';
                 state.users = state.users.map(user => 
                     user._id === action.payload._id ? action.payload : user
                 );
             })
             .addCase(updateUser.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(deleteUser.pending, (state) => {
+                state.isLoading = true;
+                state.isSuccess = false;
+                state.isError = false;
+                state.message = '';
+            })
+            .addCase(deleteUser.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.message = 'User deleted successfully';
+                state.users = state.users.filter(user => user._id !== action.meta.arg);
+            })
+            .addCase(deleteUser.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

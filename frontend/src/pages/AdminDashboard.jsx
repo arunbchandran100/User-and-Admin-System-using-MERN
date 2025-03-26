@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
-import { getUsers, deleteUser, adminLogout, createUser, updateUser } from '../features/admin/adminSlice';
+import { getUsers, deleteUser, adminLogout, createUser, updateUser, resetAdmin } from '../features/admin/adminSlice';
 
 function AdminDashboard() {
     const dispatch = useDispatch();
@@ -21,7 +22,7 @@ function AdminDashboard() {
         name: ''
     });
     
-    const { admin, users, isLoading, isError, message } = useSelector(
+    const { admin, users, isLoading, isError, isSuccess, message } = useSelector(
         (state) => state.admin
     );
 
@@ -31,12 +32,38 @@ function AdminDashboard() {
             return;
         }
 
-        if (isError) {
-            toast.error(message);
+        // Add a console log to debug
+        console.log('Admin state:', { isError, isSuccess, message });
+
+        if (isError && message) {
+            console.log('Showing error toast:', message);
+            // Use setTimeout to ensure the toast is displayed
+            setTimeout(() => {
+                toast.error(message);
+            }, 100);
+            
+            setTimeout(() => {
+                dispatch(resetAdmin());
+            }, 4000);
         }
 
-        dispatch(getUsers());
-    }, [admin, isError, message, navigate, dispatch]);
+        if (isSuccess && message) {
+            console.log('Showing success toast:', message);
+            // Use setTimeout to ensure the toast is displayed
+            setTimeout(() => {
+                toast.success(message);
+            }, 100);
+            
+            setTimeout(() => {
+                dispatch(resetAdmin());
+            }, 4000);
+        }
+
+        // Only fetch users when needed, not on every state change
+        if (!isSuccess && !isError) {
+            dispatch(getUsers());
+        }
+    }, [admin, isError, isSuccess, message, navigate, dispatch]);
 
     const handleDeleteUser = (userId, userName) => {
         Swal.fire({
@@ -50,22 +77,7 @@ function AdminDashboard() {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                dispatch(deleteUser(userId))
-                    .unwrap()
-                    .then(() => {
-                        Swal.fire(
-                            'Deleted!',
-                            'User has been deleted successfully.',
-                            'success'
-                        );
-                    })
-                    .catch((error) => {
-                        Swal.fire(
-                            'Error!',
-                            error || 'Failed to delete user.',
-                            'error'
-                        );
-                    });
+                dispatch(deleteUser(userId));
             }
         });
     };
@@ -78,30 +90,16 @@ function AdminDashboard() {
 
     const handleUpdateUser = (e) => {
         e.preventDefault();
-        dispatch(updateUser({ userId: selectedUser._id, userData: editUserData }))
-            .unwrap()
-            .then(() => {
-                toast.success('User updated successfully');
-                setShowEditModal(false);
-                setSelectedUser(null);
-            })
-            .catch((error) => {
-                toast.error(error || 'Failed to update user');
-            });
+        dispatch(updateUser({ userId: selectedUser._id, userData: editUserData }));
+        setShowEditModal(false);
+        setSelectedUser(null);
     };
 
     const handleCreateUser = (e) => {
         e.preventDefault();
-        dispatch(createUser(newUser))
-            .unwrap()
-            .then(() => {
-                toast.success('User created successfully');
-                setShowCreateModal(false);
-                setNewUser({ name: '', email: '', password: '' });
-            })
-            .catch((error) => {
-                toast.error(error || 'Failed to create user');
-            });
+        dispatch(createUser(newUser));
+        setShowCreateModal(false);
+        setNewUser({ name: '', email: '', password: '' });
     };
 
     const handleLogout = () => {
@@ -124,6 +122,7 @@ function AdminDashboard() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
+            <ToastContainer position="top-right" autoClose={3000} />
             {/* Navbar */}
             <nav className="bg-blue-800 text-white shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

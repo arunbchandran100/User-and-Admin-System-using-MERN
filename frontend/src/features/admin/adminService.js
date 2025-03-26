@@ -85,6 +85,7 @@ const createUser = async (userData) => {
     });
     
     const data = await response.json();
+
     
     if (!response.ok) {
         throw new Error(data.message || 'Failed to create user');
@@ -94,25 +95,24 @@ const createUser = async (userData) => {
 };
 
 // Update user
-const updateUser = async (userId, userData) => {
-    const admin = JSON.parse(localStorage.getItem('admin'));
-    
+const updateUser = async (userId, userData, token) => {
     const response = await fetch(`${API_URL}/users/${userId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${admin.token}`
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(userData)
     });
     
     const data = await response.json();
+    console.log('Update user response:', data);
     
     if (!response.ok) {
         throw new Error(data.message || 'Failed to update user');
     }
     
-    return data;
+    return data; // This now includes the message from the backend
 };
 
 // Add these to your exports

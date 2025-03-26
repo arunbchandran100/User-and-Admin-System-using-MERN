@@ -110,12 +110,14 @@ const createUser = asyncHandler(async (req, res) => {
         password: hashedPassword
     });
     
+    // In the createUser function
     if (user) {
         res.status(201).json({
             _id: user._id,
             name: user.name,
             email: user.email,
-            createdAt: user.createdAt
+            createdAt: user.createdAt,
+            message: 'User created successfully' // Added success message
         });
     } else {
         res.status(400).json({
@@ -177,11 +179,13 @@ const updateUser = asyncHandler(async (req, res) => {
     // Save updated user
     const updatedUser = await user.save();
     
+    // In the updateUser function
     res.status(200).json({
         _id: updatedUser._id,
         name: updatedUser.name,
         email: updatedUser.email,
-        createdAt: updatedUser.createdAt
+        createdAt: updatedUser.createdAt,
+        message: 'User updated successfully' // Added success message
     });
 });
 
