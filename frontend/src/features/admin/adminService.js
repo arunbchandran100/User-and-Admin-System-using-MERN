@@ -85,6 +85,8 @@ const createUser = async (userData) => {
     });
     
     const data = await response.json();
+    console.log('Create user response:');
+    console.log(data);
 
     
     if (!response.ok) {

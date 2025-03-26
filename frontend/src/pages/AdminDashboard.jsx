@@ -35,35 +35,34 @@ function AdminDashboard() {
         // Add a console log to debug
         console.log('Admin state:', { isError, isSuccess, message });
 
-        if (isError && message) {
-            console.log('Showing error toast:', message);
-            // Use setTimeout to ensure the toast is displayed
-            setTimeout(() => {
-                toast.error(message);
-            }, 100);
+        // Only show one toast at a time, prioritize error messages
+        if (message) {
+            // Clear any existing toasts first
+            toast.dismiss();
             
+            if (isError) {
+                console.log('Showing error toast:', message);
+                setTimeout(() => {
+                    toast.error(message);
+                }, 100);
+            } else if (isSuccess) {
+                console.log('Showing success toast:', message);
+                setTimeout(() => {
+                    toast.success(message);
+                }, 100);
+            }
+            
+            // Reset state after showing toast
             setTimeout(() => {
                 dispatch(resetAdmin());
             }, 4000);
         }
 
-        if (isSuccess && message) {
-            console.log('Showing success toast:', message);
-            // Use setTimeout to ensure the toast is displayed
-            setTimeout(() => {
-                toast.success(message);
-            }, 100);
-            
-            setTimeout(() => {
-                dispatch(resetAdmin());
-            }, 4000);
-        }
-
-        // Only fetch users when needed, not on every state change
-        if (!isSuccess && !isError) {
+        // Only fetch users when needed
+        if (!isSuccess && !isError && !isLoading) {
             dispatch(getUsers());
         }
-    }, [admin, isError, isSuccess, message, navigate, dispatch]);
+    }, [admin, isError, isSuccess, message, navigate, dispatch, isLoading]);
 
     const handleDeleteUser = (userId, userName) => {
         Swal.fire({
@@ -97,6 +96,12 @@ function AdminDashboard() {
 
     const handleCreateUser = (e) => {
         e.preventDefault();
+        
+        // Check if we're already in a loading state
+        if (isLoading) {
+            return;
+        }
+        
         dispatch(createUser(newUser));
         setShowCreateModal(false);
         setNewUser({ name: '', email: '', password: '' });

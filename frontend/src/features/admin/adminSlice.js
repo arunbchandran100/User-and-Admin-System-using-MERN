@@ -109,6 +109,7 @@ const adminSlice = createSlice({
             .addCase(adminLogin.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
+                state.isSuccess = false; // Add this line
                 state.message = action.payload;
                 state.admin = null;
             })
@@ -126,6 +127,7 @@ const adminSlice = createSlice({
             .addCase(getUsers.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
+                state.isSuccess = false; // Add this line
                 state.message = action.payload;
             })
             // Remove this deleteUser.fulfilled case completely
@@ -151,6 +153,7 @@ const adminSlice = createSlice({
             .addCase(createUser.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
+                state.isSuccess = false; // Explicitly set isSuccess to false
                 state.message = action.payload;
             })
             .addCase(updateUser.pending, (state) => {
@@ -171,6 +174,7 @@ const adminSlice = createSlice({
             .addCase(updateUser.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
+                state.isSuccess = false; // Add this line
                 state.message = action.payload;
             })
             .addCase(deleteUser.pending, (state) => {
@@ -188,6 +192,7 @@ const adminSlice = createSlice({
             .addCase(deleteUser.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
+                state.isSuccess = false; // Add this line
                 state.message = action.payload;
             });
     }
