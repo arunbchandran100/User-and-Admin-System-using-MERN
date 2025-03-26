@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { updateProfile } from '../features/user/userSlice';
@@ -27,19 +27,11 @@ function UserProfile() {
         }
     };
 
-    // Using environment variables for Cloudinary configuration with fallbacks
     const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL ;
     const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET ;
     const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME ;
 
-    // Log to verify environment variables are loaded
-    useEffect(() => {
-        console.log("Cloudinary config loaded:", {
-            url: CLOUDINARY_URL ? "✓" : "✗",
-            preset: UPLOAD_PRESET ? "✓" : "✗",
-            cloud: CLOUD_NAME ? "✓" : "✗"
-        });
-    }, []);
+
 
     const uploadImageToCloudinary = async () => {
         if (!imageFile) return user?.profileImage || null;
