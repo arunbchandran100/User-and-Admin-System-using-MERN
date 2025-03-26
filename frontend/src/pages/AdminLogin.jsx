@@ -19,7 +19,9 @@ function AdminLogin() {
 
     useEffect(() => {
         if (isError) {
-            toast.error(message);
+            setTimeout(() => {
+                toast.error(message);
+            }, 100);
             setTimeout(() => {
                 dispatch(resetAdmin());
             }, 1000);
