@@ -41,8 +41,6 @@ const userSlice = createSlice({
             .addCase(updateProfile.fulfilled, (state) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // We can't use thunkAPI here, so we'll handle this differently
-                // The auth slice will need to listen for this action separately
             })
             .addCase(updateProfile.rejected, (state, action) => {
                 state.isLoading = false;

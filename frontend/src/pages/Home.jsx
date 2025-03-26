@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../features/auth/authSlice';
-import Navbar from '../components/Navbar';
 
 function Home() {
     const dispatch = useDispatch();
@@ -16,7 +15,6 @@ function Home() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* <Navbar /> */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="bg-white rounded-lg shadow-lg p-8">
                     <div className="text-center mb-8">

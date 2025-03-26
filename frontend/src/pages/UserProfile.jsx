@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { updateProfile } from '../features/user/userSlice';
@@ -27,9 +27,19 @@ function UserProfile() {
         }
     };
 
-    // Using the same constants as in the OLX clone project
-    const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dxbn6tmy7/image/upload";
-    const UPLOAD_PRESET = "olx-clone";
+    // Using environment variables for Cloudinary configuration with fallbacks
+    const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL || "https://api.cloudinary.com/v1_1/dxbn6tmy7/image/upload";
+    const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "olx-clone";
+    const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dxbn6tmy7";
+
+    // Log to verify environment variables are loaded
+    useEffect(() => {
+        console.log("Cloudinary config loaded:", {
+            url: CLOUDINARY_URL ? "✓" : "✗",
+            preset: UPLOAD_PRESET ? "✓" : "✗",
+            cloud: CLOUD_NAME ? "✓" : "✗"
+        });
+    }, []);
 
     const uploadImageToCloudinary = async () => {
         if (!imageFile) return user?.profileImage || null;
