@@ -28,9 +28,9 @@ function UserProfile() {
     };
 
     // Using environment variables for Cloudinary configuration with fallbacks
-    const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL || "https://api.cloudinary.com/v1_1/dxbn6tmy7/image/upload";
-    const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "olx-clone";
-    const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dxbn6tmy7";
+    const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL ;
+    const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET ;
+    const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME ;
 
     // Log to verify environment variables are loaded
     useEffect(() => {
