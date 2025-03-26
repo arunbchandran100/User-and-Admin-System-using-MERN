@@ -4,11 +4,11 @@ import userReducer from '../features/user/userSlice';
 import adminReducer from '../features/admin/adminSlice';
 
 export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    user: userReducer,
-    admin: adminReducer,
-  },
+    reducer: {
+        auth: authReducer,
+        user: userReducer,
+        admin: adminReducer,
+    },
 });
 
 // Add this line to export the store as default

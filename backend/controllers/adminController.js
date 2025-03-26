@@ -66,4 +66,123 @@ const deleteUser = asyncHandler(async (req, res) => {
     });
 });
 
-module.exports = { adminLogin, getAllUsers, deleteUser };
+// Create new user (admin only)
+const createUser = asyncHandler(async (req, res) => {
+    const { name, email, password } = req.body;
+    
+    // Validation
+    if (!name || !email || !password) {
+        return res.status(400).json({
+            message: 'Please provide all required fields'
+        });
+    }
+    
+    // Check if email is valid
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({
+            message: 'Please provide a valid email address'
+        });
+    }
+    
+    // Check if password is strong enough
+    if (password.length < 6) {
+        return res.status(400).json({
+            message: 'Password must be at least 6 characters long'
+        });
+    }
+    
+    // Check if user already exists
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+        return res.status(400).json({
+            message: 'User with this email already exists'
+        });
+    }
+    
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Create user
+    const user = await User.create({
+        name,
+        email,
+        password: hashedPassword
+    });
+    
+    if (user) {
+        res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            createdAt: user.createdAt
+        });
+    } else {
+        res.status(400).json({
+            message: 'Invalid user data'
+        });
+    }
+});
+
+// Update user (admin only)
+const updateUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const { name, email, password } = req.body;
+    
+    const user = await User.findById(userId);
+    
+    if (!user) {
+        return res.status(404).json({
+            message: 'User not found'
+        });
+    }
+    
+    // Update fields if provided
+    if (name) {
+        user.name = name;
+    }
+    
+    if (email) {
+        // Check if email is valid
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                message: 'Please provide a valid email address'
+            });
+        }
+        
+        // Check if email is already in use by another user
+        const existingUser = await User.findOne({ email });
+        if (existingUser && existingUser._id.toString() !== userId) {
+            return res.status(400).json({
+                message: 'Email is already in use by another user'
+            });
+        }
+        
+        user.email = email;
+    }
+    
+    if (password) {
+        // Check if password is strong enough
+        if (password.length < 6) {
+            return res.status(400).json({
+                message: 'Password must be at least 6 characters long'
+            });
+        }
+        
+        // Hash password
+        user.password = await bcrypt.hash(password, 10);
+    }
+    
+    // Save updated user
+    const updatedUser = await user.save();
+    
+    res.status(200).json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        createdAt: updatedUser.createdAt
+    });
+});
+
+module.exports = { adminLogin, getAllUsers, deleteUser, createUser, updateUser };
